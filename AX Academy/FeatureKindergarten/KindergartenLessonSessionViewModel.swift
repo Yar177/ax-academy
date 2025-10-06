@@ -1,13 +1,11 @@
 import Foundation
 import Combine
-import Core
-import ContentModel
 
 /// View model that manages a single lesson session.  It iterates through
 /// questions, evaluates answers and signals completion.  Analytics events are
 /// logged when the lesson starts and completes, and when each question is
 /// answered【8868879203866†L39-L60】.
-final class LessonSessionViewModel: BaseViewModel {
+final class KindergartenLessonSessionViewModel: BaseViewModel {
     /// The lesson being presented.
     let lesson: Lesson
     /// The zero‑based index of the current question.

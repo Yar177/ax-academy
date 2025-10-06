@@ -1,11 +1,11 @@
 import Foundation
 import Combine
-import Core
-import ContentModel
 
-/// View model managing a grade 1 lesson session.  Tracks progress and logs
-/// events via the analytics protocol【8868879203866†L39-L60】.
-final class LessonSessionViewModel: BaseViewModel {
+/// View model that manages a single Grade 1 lesson session.  It iterates
+/// through questions, evaluates answers and signals completion.  Analytics
+/// events are logged when the lesson starts and completes, and when each
+/// question is answered.
+final class Grade1LessonSessionViewModel: BaseViewModel {
     let lesson: Lesson
     @Published private(set) var currentIndex: Int = 0
     @Published private(set) var isFinished: Bool = false

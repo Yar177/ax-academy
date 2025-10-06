@@ -6,17 +6,29 @@
 //
 
 import SwiftUI
-import Core
 
 @main
 struct AX_AcademyApp: App {
+    
+    init() {
+        setupDependencies()
+    }
+    
     var body: some Scene {
         WindowGroup {
-            KindergartenCoordinator(
-                       contentProvider: StaticContentProvider(),
-                       analytics: DependencyContainer.shared.resolve(AnalyticsLogging.self),
-                       persistence: DependencyContainer.shared.resolve(Persistence.self)
-                   ).start()
+            ContentView()
         }
+    }
+    
+    /// Registers all app dependencies in the DependencyContainer
+    private func setupDependencies() {
+        let container = DependencyContainer.shared
+        
+        // Register content provider
+        container.register(ContentProviding.self) {
+            StaticContentProvider()
+        }
+        
+        // Analytics and persistence are already registered by default in DependencyContainer
     }
 }

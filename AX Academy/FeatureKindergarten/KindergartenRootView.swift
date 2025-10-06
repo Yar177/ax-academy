@@ -1,12 +1,10 @@
 import SwiftUI
-import ContentModel
-import DesignSystem
 
 /// The root view for kindergarten math.  Displays a list of available
 /// lessons.  Tapping a lesson navigates to a quiz for that lesson.  Uses
 /// `NavigationStack` which is available on iOS 16 and later.
 struct KindergartenRootView: View {
-    @ObservedObject var viewModel: LessonListViewModel
+    @ObservedObject var viewModel: KindergartenLessonListViewModel
 
     var body: some View {
         NavigationStack {
@@ -21,14 +19,14 @@ struct KindergartenRootView: View {
             .navigationTitle(viewModel.grade.displayName + " Math")
             .navigationDestination(for: Lesson.self) { lesson in
                 // Create a session view model for the selected lesson.
-                let sessionVM = LessonSessionViewModel(grade: viewModel.grade,
+                let sessionVM = KindergartenLessonSessionViewModel(grade: viewModel.grade,
                                                        lesson: lesson,
                                                        analytics: viewModel.analytics,
                                                        persistence: viewModel.persistence,
                                                        markLessonCompleted: { [weak viewModel] lesson in
                                                            viewModel?.markLessonCompleted(lesson)
                                                        })
-                LessonSessionView(viewModel: sessionVM)
+                KindergartenLessonSessionView(viewModel: sessionVM)
             }
         }
     }

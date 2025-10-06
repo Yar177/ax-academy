@@ -1,12 +1,10 @@
 import SwiftUI
-import ContentModel
-import DesignSystem
 
 /// A view that presents questions from a lesson one at a time.  It provides
 /// immediate feedback and automatically advances after a short pause.  When
 /// all questions have been answered a summary screen is shown.
-struct LessonSessionView: View {
-    @ObservedObject var viewModel: LessonSessionViewModel
+struct KindergartenLessonSessionView: View {
+    @ObservedObject var viewModel: KindergartenLessonSessionViewModel
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {

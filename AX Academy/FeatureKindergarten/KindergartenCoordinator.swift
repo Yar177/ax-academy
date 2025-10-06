@@ -1,7 +1,4 @@
 import SwiftUI
-import Core
-import ContentModel
-import DesignSystem
 
 /// The coordinator responsible for the Kindergarten feature.  It builds a
 /// navigation tree for kindergarten lessons and injects dependencies into
@@ -27,7 +24,7 @@ public final class KindergartenCoordinator: Coordinator {
     /// quiz view onto the navigation stack.
     public func start() -> some View {
         let lessons = contentProvider.lessons(for: .kindergarten)
-        let rootViewModel = LessonListViewModel(grade: .kindergarten,
+        let rootViewModel = KindergartenLessonListViewModel(grade: .kindergarten,
                                                 lessons: lessons,
                                                 analytics: analytics,
                                                 persistence: persistence)

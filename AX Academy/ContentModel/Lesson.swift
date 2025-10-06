@@ -5,7 +5,7 @@ import Foundation
 /// counting or addition.  They have stable identifiers for analytics and
 /// persistence.  In the future we can add metadata like duration or
 /// dependencies between lessons.
-public struct Lesson: Identifiable, Codable {
+public struct Lesson: Identifiable, Codable, Hashable {
     public var id: String
     public var title: String
     public var description: String

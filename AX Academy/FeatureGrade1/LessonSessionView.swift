@@ -1,12 +1,10 @@
 import SwiftUI
-import ContentModel
-import DesignSystem
 
-/// Quiz view for grade 1 lessons.  Presents one question at a time and
-/// provides feedback.  Once the lesson is complete a summary screen
-/// encourages the learner before returning to the lesson list.
-struct LessonSessionView: View {
-    @ObservedObject var viewModel: LessonSessionViewModel
+/// A Grade 1 view that presents questions from a lesson one at a time.
+/// Provides immediate feedback and automatically advances after a pause.
+/// Shows a summary screen when all questions are answered.
+struct Grade1LessonSessionView: View {
+    @ObservedObject var viewModel: Grade1LessonSessionViewModel
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {

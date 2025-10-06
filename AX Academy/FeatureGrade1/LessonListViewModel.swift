@@ -1,11 +1,11 @@
 import Foundation
 import Combine
-import Core
-import ContentModel
 
-/// View model for the grade 1 lesson list.  Maintains completion state in
-/// persistence and logs screen presentations【8868879203866†L39-L60】.
-final class LessonListViewModel: BaseViewModel {
+/// View model for the root Grade 1 view displaying a list of lessons.  It
+/// loads lesson completion status from persistence and logs screen
+/// presentations.  When a lesson is tapped a LessonSessionViewModel will be
+/// created by the view.
+final class Grade1LessonListViewModel: BaseViewModel {
     @Published var lessons: [Lesson]
     let grade: Grade
     let analytics: AnalyticsLogging

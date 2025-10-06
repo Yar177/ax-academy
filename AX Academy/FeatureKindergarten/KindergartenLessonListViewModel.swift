@@ -1,13 +1,11 @@
 import Foundation
 import Combine
-import Core
-import ContentModel
 
 /// View model for the root kindergarten view displaying a list of lessons.  It
 /// loads lesson completion status from persistence and logs screen
 /// presentations【8868879203866†L39-L60】.  When a lesson is tapped a
 /// `LessonSessionViewModel` will be created by the view.
-final class LessonListViewModel: BaseViewModel {
+final class KindergartenLessonListViewModel: BaseViewModel {
     @Published var lessons: [Lesson]
     let grade: Grade
 

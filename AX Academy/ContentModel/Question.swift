@@ -4,7 +4,7 @@ import Foundation
 /// so progress can be recorded.  The `choices` array should contain at least
 /// two elements.  The `correctIndex` references the position within the
 /// `choices` array that holds the correct answer.
-public struct Question: Identifiable, Codable {
+public struct Question: Identifiable, Codable, Hashable {
     public var id: UUID
     public var prompt: String
     public var choices: [String]

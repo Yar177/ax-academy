@@ -1,11 +1,9 @@
 import SwiftUI
-import ContentModel
-import DesignSystem
 
-/// The root view for grade 1 math.  Lists available lessons and navigates to
+/// The root view for grade 1 math.  Lists available lessons and navigates to
 /// quizzes.
 struct Grade1RootView: View {
-    @ObservedObject var viewModel: LessonListViewModel
+    @ObservedObject var viewModel: Grade1LessonListViewModel
     var body: some View {
         NavigationStack {
             List {
@@ -18,14 +16,14 @@ struct Grade1RootView: View {
             }
             .navigationTitle(viewModel.grade.displayName + " Math")
             .navigationDestination(for: Lesson.self) { lesson in
-                let sessionVM = LessonSessionViewModel(grade: viewModel.grade,
+                let sessionVM = Grade1LessonSessionViewModel(grade: viewModel.grade,
                                                        lesson: lesson,
                                                        analytics: viewModel.analytics,
                                                        persistence: viewModel.persistence,
                                                        markLessonCompleted: { [weak viewModel] lesson in
                                                            viewModel?.markLessonCompleted(lesson)
                                                        })
-                LessonSessionView(viewModel: sessionVM)
+                Grade1LessonSessionView(viewModel: sessionVM)
             }
         }
     }

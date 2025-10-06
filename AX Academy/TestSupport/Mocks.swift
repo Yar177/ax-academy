@@ -1,5 +1,4 @@
 import Foundation
-import Core
 
 /// A mock analytics logger used in unit tests.  It records events to an
 /// internal array which can be inspected by tests to verify correct
