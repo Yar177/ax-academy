@@ -15,6 +15,19 @@ public enum AnalyticsEvent: Equatable {
     /// Called when a feature screen is shown.  Useful for measuring
     /// engagement.
     case screenPresented(name: String)
+    /// Logged when an adaptive hint is surfaced to the learner.
+    case hintShown(lessonID: String, questionID: UUID, hintIndex: Int)
+    /// Logged when a formative assessment (quick check or exit ticket) starts.
+    case assessmentPresented(kind: String, lessonID: String)
+    /// Logged when a formative assessment finishes.
+    case assessmentCompleted(kind: String, lessonID: String, passed: Bool)
+    /// Logged when a badge is awarded.
+    case badgeEarned(id: String, lessonID: String)
+    /// Logged when accessibility preferences are detected so we can verify the
+    /// UI is adapting correctly.
+    case accessibilityProfiled(voiceOver: Bool, largeText: Bool, reduceMotion: Bool)
+    /// Logged when the device profile is captured for performance tuning.
+    case performanceProfiled(device: String, classification: String, estimatedFPS: Double)
 }
 
 /// A protocol for analytics logging.  This allows the app to collect
