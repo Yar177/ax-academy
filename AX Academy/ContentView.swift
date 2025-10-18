@@ -9,7 +9,8 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var selectedGrade: Grade?
-    
+    @State private var gradeProgress: [GradeProgressSummary] = []
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 40) {
@@ -29,7 +30,12 @@ struct ContentView: View {
                         .multilineTextAlignment(.center)
                 }
                 .padding(.top, 40)
-                
+
+                if !gradeProgress.isEmpty {
+                    ProgressOverviewCard(summaries: gradeProgress)
+                        .padding(.horizontal, 20)
+                }
+
                 // Grade Selection
                 VStack(spacing: 20) {
                     ForEach(Grade.allCases, id: \.self) { grade in
@@ -47,9 +53,15 @@ struct ContentView: View {
             .fullScreenCover(item: $selectedGrade) { grade in
                 gradeView(for: grade)
             }
+            .onAppear(perform: loadProgress)
+            .onChange(of: selectedGrade) { newValue in
+                if newValue == nil {
+                    loadProgress()
+                }
+            }
         }
     }
-    
+
     @ViewBuilder
     private func gradeView(for grade: Grade) -> some View {
         let container = DependencyContainer.shared
@@ -79,6 +91,65 @@ struct ContentView: View {
                 .onAppear {
                     analytics.log(event: .screenPresented(name: "Grade1"))
                 }
+        }
+    }
+}
+
+private extension ContentView {
+    struct GradeProgressSummary: Identifiable {
+        let grade: Grade
+        let completedLessons: Int
+        let totalLessons: Int
+
+        var id: Grade { grade }
+        var progress: Double { totalLessons == 0 ? 0 : Double(completedLessons) / Double(totalLessons) }
+    }
+
+    func loadProgress() {
+        let container = DependencyContainer.shared
+        let provider = container.resolve(ContentProviding.self)
+        let persistence = container.resolve(Persistence.self)
+        let analytics = container.resolve(AnalyticsLogging.self)
+        var summaries: [GradeProgressSummary] = []
+        for grade in Grade.allCases {
+            let lessons = provider.lessons(for: grade)
+            let completed = lessons.filter { lesson in
+                let key = "\(grade.rawValue).lessonCompleted.\(lesson.id)"
+                return persistence.bool(forKey: key) ?? false
+            }.count
+            summaries.append(GradeProgressSummary(grade: grade,
+                                                  completedLessons: completed,
+                                                  totalLessons: lessons.count))
+        }
+        gradeProgress = summaries
+        analytics.log(event: .multiGradeOverviewViewed)
+    }
+}
+
+private struct ProgressOverviewCard: View {
+    let summaries: [ContentView.GradeProgressSummary]
+
+    var body: some View {
+        CardView {
+            VStack(alignment: .leading, spacing: 16) {
+                Text("Progress Overview")
+                    .font(DSTypography.title())
+                    .foregroundColor(DSColor.primaryText)
+                ForEach(summaries) { summary in
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack {
+                            Text(summary.grade.displayName)
+                                .font(DSTypography.body())
+                            Spacer()
+                            Text("\(summary.completedLessons)/\(summary.totalLessons)")
+                                .font(DSTypography.caption())
+                                .foregroundColor(DSColor.secondaryText)
+                        }
+                        ProgressView(value: summary.progress)
+                            .tint(DSColor.accent)
+                    }
+                }
+            }
         }
     }
 }

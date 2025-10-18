@@ -15,6 +15,20 @@ public enum AnalyticsEvent: Equatable {
     /// Called when a feature screen is shown.  Useful for measuring
     /// engagement.
     case screenPresented(name: String)
+    /// Called when a Grade 1 unit unlocks for the first time.
+    case gradeUnitUnlocked(grade: String, unitID: String)
+    /// Called when the goal tracker snapshot updates.
+    case gradeGoalProgressUpdated(grade: String, completedLessons: Int, totalLessons: Int)
+    /// Called when a diagnostic placement check is completed.
+    case diagnosticCompleted(grade: String)
+    /// Called when a challenge set is surfaced in a lesson.
+    case challengeSetPresented(grade: String, lessonID: String, challengeID: String)
+    /// Called when remediation referencing Kindergarten content is suggested.
+    case remediationSuggested(grade: String, kindergartenLessonID: String, lessonID: String)
+    /// Called when a learner acknowledges a remediation prompt.
+    case remediationAcknowledged(grade: String, kindergartenLessonID: String, lessonID: String)
+    /// Called when the multi-grade overview on the home screen is viewed.
+    case multiGradeOverviewViewed
 }
 
 /// A protocol for analytics logging.  This allows the app to collect
