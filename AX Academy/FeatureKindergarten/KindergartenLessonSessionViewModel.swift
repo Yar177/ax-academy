@@ -60,6 +60,7 @@ final class KindergartenLessonSessionViewModel: BaseViewModel {
 
     private var requestedHintCount: Int = 0
     private var hasBegun = false
+    private var questionsAnsweredWithMistake = Set<Question.ID>()
 
     init(grade: Grade,
          lesson: Lesson,
@@ -115,11 +116,14 @@ final class KindergartenLessonSessionViewModel: BaseViewModel {
         if isCorrect {
             requestedHintCount = 0
             currentHint = nil
-            recordCorrectAnswer(for: question)
+            let earnedPerfectCredit = !questionsAnsweredWithMistake.contains(question.id)
+            recordCompletion(for: question, countedAsPerfect: earnedPerfectCredit)
+            questionsAnsweredWithMistake.remove(question.id)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) { [weak self] in
                 self?.advance()
             }
         } else {
+            questionsAnsweredWithMistake.insert(question.id)
             provideAdaptiveHint(for: question, escalate: true)
         }
     }
@@ -145,9 +149,11 @@ final class KindergartenLessonSessionViewModel: BaseViewModel {
         }
     }
 
-    private func recordCorrectAnswer(for question: Question) {
+    private func recordCompletion(for question: Question, countedAsPerfect: Bool) {
         progress.answered += 1
-        progress.correct += 1
+        if countedAsPerfect {
+            progress.correct += 1
+        }
         persistence.set(true, forKey: progressKey(for: question))
     }
 

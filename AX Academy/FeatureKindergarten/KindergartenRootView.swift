@@ -160,6 +160,7 @@ private struct TopicCarouselSection: View {
     var topic: LessonTopic
     var lessons: [Lesson]
     var isReduceMotion: Bool
+    var completionChecker: (Lesson) -> Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
