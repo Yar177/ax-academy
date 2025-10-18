@@ -15,9 +15,9 @@ public enum Grade: String, CaseIterable, Codable, Identifiable {
     public var displayName: String {
         switch self {
         case .kindergarten:
-            return "Kindergarten"
+            return NSLocalizedString("grade_kindergarten", comment: "Kindergarten grade label")
         case .grade1:
-            return "Grade 1"
+            return NSLocalizedString("grade_1", comment: "Grade 1 label")
         }
     }
 }

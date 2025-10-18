@@ -10,15 +10,18 @@ final class Grade1LessonListViewModel: BaseViewModel {
     let grade: Grade
     let analytics: AnalyticsLogging
     let persistence: Persistence
+    let progressTracker: ProgressTracking
 
     init(grade: Grade,
          lessons: [Lesson],
          analytics: AnalyticsLogging,
-         persistence: Persistence) {
+         persistence: Persistence,
+         progressTracker: ProgressTracking) {
         self.grade = grade
         self.lessons = lessons
         self.analytics = analytics
         self.persistence = persistence
+        self.progressTracker = progressTracker
         super.init()
         analytics.log(event: .screenPresented(name: "\(grade.displayName) Lesson List"))
     }

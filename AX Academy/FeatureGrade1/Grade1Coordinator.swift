@@ -6,13 +6,16 @@ public final class Grade1Coordinator: Coordinator {
     private let contentProvider: ContentProviding
     private let analytics: AnalyticsLogging
     private let persistence: Persistence
+    private let progressTracker: ProgressTracking
 
     public init(contentProvider: ContentProviding,
                 analytics: AnalyticsLogging,
-                persistence: Persistence) {
+                persistence: Persistence,
+                progressTracker: ProgressTracking) {
         self.contentProvider = contentProvider
         self.analytics = analytics
         self.persistence = persistence
+        self.progressTracker = progressTracker
     }
 
     public func start() -> some View {
@@ -20,7 +23,8 @@ public final class Grade1Coordinator: Coordinator {
         let rootVM = Grade1LessonListViewModel(grade: .grade1,
                                          lessons: lessons,
                                          analytics: analytics,
-                                         persistence: persistence)
+                                         persistence: persistence,
+                                         progressTracker: progressTracker)
         return Grade1RootView(viewModel: rootVM)
     }
 }

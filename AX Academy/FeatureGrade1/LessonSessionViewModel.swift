@@ -15,17 +15,20 @@ final class Grade1LessonSessionViewModel: BaseViewModel {
     private let analytics: AnalyticsLogging
     private let persistence: Persistence
     private let markLessonCompleted: (Lesson) -> Void
+    private let progressTracker: ProgressTracking
 
     init(grade: Grade,
          lesson: Lesson,
          analytics: AnalyticsLogging,
          persistence: Persistence,
+         progressTracker: ProgressTracking,
          markLessonCompleted: @escaping (Lesson) -> Void) {
         self.grade = grade
         self.lesson = lesson
         self.analytics = analytics
         self.persistence = persistence
         self.markLessonCompleted = markLessonCompleted
+        self.progressTracker = progressTracker
         super.init()
         analytics.log(event: .lessonStarted(grade: grade.rawValue, lessonID: lesson.id))
     }
@@ -40,6 +43,10 @@ final class Grade1LessonSessionViewModel: BaseViewModel {
         let correct = question.isCorrectChoice(at: index)
         lastAnswerCorrect = correct
         analytics.log(event: .questionAnswered(correct: correct))
+        progressTracker.recordAnswer(for: grade,
+                                     lessonID: lesson.id,
+                                     totalQuestions: lesson.questions.count,
+                                     wasCorrect: correct)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
             self?.advance()
         }
