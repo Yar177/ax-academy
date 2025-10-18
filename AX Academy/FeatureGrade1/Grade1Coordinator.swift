@@ -17,8 +17,10 @@ public final class Grade1Coordinator: Coordinator {
 
     public func start() -> some View {
         let lessons = contentProvider.lessons(for: .grade1)
+        let kindergartenLessons = contentProvider.lessons(for: .kindergarten)
         let rootVM = Grade1LessonListViewModel(grade: .grade1,
                                          lessons: lessons,
+                                         kindergartenLessons: kindergartenLessons,
                                          analytics: analytics,
                                          persistence: persistence)
         return Grade1RootView(viewModel: rootVM)

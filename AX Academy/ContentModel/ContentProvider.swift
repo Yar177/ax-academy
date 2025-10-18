@@ -64,65 +64,326 @@ public final class StaticContentProvider: ContentProviding {
     private var grade1Lessons: [Lesson] {
         return [
             Lesson(
-                id: "g1_addSubWithin20",
-                title: "Addition and Subtraction Facts",
-                description: "Practice addition and subtraction facts up to 20【8868879203866†L39-L60】.",
+                id: "g1_placeValue_blocks",
+                title: "Place Value & Base-Ten Blocks",
+                description: "Build two-digit numbers using tens and ones blocks.",
                 questions: [
-                    Question(prompt: "9 + 8 = ?", choices: ["15", "16", "17"], correctIndex: 2),
-                    Question(prompt: "14 - 5 = ?", choices: ["8", "9", "10"], correctIndex: 1),
-                    Question(prompt: "10 + 7 = ?", choices: ["16", "17", "18"], correctIndex: 1)
+                    Question(
+                        prompt: "Which blocks make the number 34?",
+                        choices: [
+                            "3 tens and 4 ones",
+                            "4 tens and 3 ones",
+                            "34 ones"
+                        ],
+                        correctIndex: 0,
+                        interaction: .baseTenBlocks,
+                        hint: "Count groups of ten first."
+                    ),
+                    Question(
+                        prompt: "You see 5 tens and 2 ones. What number is shown?",
+                        choices: ["52", "25", "7"],
+                        correctIndex: 0,
+                        interaction: .baseTenBlocks
+                    ),
+                    Question(
+                        prompt: "Choose the blocks that show 48.",
+                        choices: [
+                            "4 tens and 8 ones",
+                            "8 tens and 4 ones",
+                            "40 ones and 8 tens"
+                        ],
+                        correctIndex: 0,
+                        interaction: .baseTenBlocks
+                    )
+                ],
+                mode: .placeValue,
+                unlockRequirement: UnlockRequirement(kind: .kindergartenMastery),
+                challengeSets: [
+                    ChallengeSet(
+                        id: "g1_placeValue_challenge",
+                        title: "Expanded Form Challenge",
+                        questions: [
+                            Question(
+                                prompt: "Which number matches 6 tens and 7 ones?",
+                                choices: ["76", "67", "607"],
+                                correctIndex: 1,
+                                interaction: .baseTenBlocks
+                            ),
+                            Question(
+                                prompt: "Select the blocks for 90.",
+                                choices: ["9 tens", "9 ones", "90 ones"],
+                                correctIndex: 0,
+                                interaction: .baseTenBlocks
+                            )
+                        ],
+                        threshold: 3
+                    )
+                ],
+                remediation: [
+                    RemediationLink(
+                        kindergartenLessonID: "kg_counting",
+                        message: "Review counting sets to strengthen place value understanding."
+                    )
                 ]
             ),
             Lesson(
-                id: "g1_inverse",
-                title: "Inverse Operations",
-                description: "See how addition and subtraction are related【8868879203866†L54-L61】.",
+                id: "g1_wordProblems_multiStep",
+                title: "Multi-Step Word Problems",
+                description: "Solve word problems by working through each step.",
                 questions: [
-                    Question(prompt: "Which subtraction matches 5 + 2 = 7?", choices: ["7 - 2 = 5", "7 - 5 = 1", "5 - 2 = 3"], correctIndex: 0),
-                    Question(prompt: "Which addition matches 9 - 4 = 5?", choices: ["5 + 4 = 9", "4 + 5 = 8", "9 + 4 = 5"], correctIndex: 0),
-                    Question(prompt: "Which equation shows subtraction as the inverse of addition?", choices: ["6 + 3 = 9", "9 - 3 = 6", "8 + 1 = 9"], correctIndex: 1)
+                    Question(
+                        prompt: "Mia has 6 stickers. She buys 4 more and gives 3 to a friend. How many stickers does she have now?",
+                        choices: ["7", "9", "13"],
+                        correctIndex: 0,
+                        interaction: .wordProblem,
+                        steps: [
+                            QuestionStep(prompt: "Start with 6 stickers and add 4. What do you get?", choices: ["9", "10", "12"], correctIndex: 1, hint: "6 + 4"),
+                            QuestionStep(prompt: "Now subtract the 3 she gave away.", choices: ["7", "9", "11"], correctIndex: 0, hint: "10 - 3")
+                        ]
+                    ),
+                    Question(
+                        prompt: "A class reads 8 pages on Monday and 7 pages on Tuesday. They need to read 5 more pages to finish the book. How many pages are in the book?",
+                        choices: ["15", "20", "25"],
+                        correctIndex: 1,
+                        interaction: .wordProblem,
+                        steps: [
+                            QuestionStep(prompt: "How many pages after Monday and Tuesday?", choices: ["15", "16", "17"], correctIndex: 0),
+                            QuestionStep(prompt: "Add the last 5 pages.", choices: ["18", "19", "20"], correctIndex: 2)
+                        ]
+                    ),
+                    Question(
+                        prompt: "There are 12 apples. Sara cuts them into groups of 3 to share equally. How many groups does she make?",
+                        choices: ["3", "4", "6"],
+                        correctIndex: 1,
+                        interaction: .wordProblem,
+                        steps: [
+                            QuestionStep(prompt: "How many groups if each has 3 apples?", choices: ["3", "4", "5"], correctIndex: 1)
+                        ]
+                    )
+                ],
+                mode: .wordProblems,
+                unlockRequirement: UnlockRequirement(kind: .unitCompleted, value: "g1_placeValue_blocks"),
+                challengeSets: [
+                    ChallengeSet(
+                        id: "g1_wordProblems_challenge",
+                        title: "Extended Word Problems",
+                        questions: [
+                            Question(
+                                prompt: "A field trip bus holds 10 students. Three buses are full and 4 students still need seats. How many students are going?",
+                                choices: ["30", "34", "40"],
+                                correctIndex: 1,
+                                interaction: .wordProblem
+                            )
+                        ],
+                        threshold: 2
+                    )
+                ],
+                remediation: [
+                    RemediationLink(
+                        kindergartenLessonID: "kg_arithmetic",
+                        message: "Review Kindergarten addition and subtraction stories before retrying."
+                    )
                 ]
             ),
             Lesson(
-                id: "g1_counting120",
-                title: "Counting & Writing Numbers",
-                description: "Count and write numbers up to 120【8868879203866†L68-L78】.",
+                id: "g1_fractions_intro",
+                title: "Introductory Fractions",
+                description: "Understand halves and quarters as equal shares.",
                 questions: [
-                    Question(prompt: "What number comes after 119?", choices: ["110", "120", "121"], correctIndex: 1),
-                    Question(prompt: "How is 'one hundred and twelve' written?", choices: ["112", "120", "102"], correctIndex: 0),
-                    Question(prompt: "How many tens are in 76?", choices: ["7", "6", "76"], correctIndex: 0)
+                    Question(
+                        prompt: "Which picture shows one half?",
+                        choices: ["Two equal parts shaded", "One of four parts shaded", "Three parts shaded"],
+                        correctIndex: 0,
+                        interaction: .fractions
+                    ),
+                    Question(
+                        prompt: "A pizza is cut into 4 equal slices. You eat one slice. What fraction of the pizza did you eat?",
+                        choices: ["1/2", "1/3", "1/4"],
+                        correctIndex: 2,
+                        interaction: .fractions
+                    ),
+                    Question(
+                        prompt: "Choose the fraction that means two equal parts out of four are shaded.",
+                        choices: ["1/2", "2/4", "2/3"],
+                        correctIndex: 1,
+                        interaction: .fractions
+                    )
+                ],
+                mode: .fractions,
+                unlockRequirement: UnlockRequirement(kind: .unitCompleted, value: "g1_wordProblems_multiStep"),
+                challengeSets: [
+                    ChallengeSet(
+                        id: "g1_fractions_challenge",
+                        title: "Fraction Match",
+                        questions: [
+                            Question(
+                                prompt: "Which is the same as 1/2?",
+                                choices: ["2/4", "1/3", "3/6"],
+                                correctIndex: 0,
+                                interaction: .fractions
+                            ),
+                            Question(
+                                prompt: "Which picture shows 3/4?",
+                                choices: ["Three out of four parts shaded", "One out of four parts shaded", "Two out of three parts shaded"],
+                                correctIndex: 0,
+                                interaction: .fractions
+                            )
+                        ],
+                        threshold: 3
+                    )
+                ],
+                remediation: [
+                    RemediationLink(
+                        kindergartenLessonID: "kg_shapes",
+                        message: "Review equal parts with Kindergarten shapes."
+                    )
                 ]
             ),
             Lesson(
-                id: "g1_addWithin100",
-                title: "Adding Within 100",
-                description: "Add numbers within 100 using place value strategies【8868879203866†L80-L94】.",
-                questions: [
-                    Question(prompt: "25 + 30 = ?", choices: ["55", "65", "45"], correctIndex: 0),
-                    Question(prompt: "45 + 10 = ?", choices: ["35", "55", "65"], correctIndex: 1),
-                    Question(prompt: "63 + 20 = ?", choices: ["73", "83", "93"], correctIndex: 1)
-                ]
-            ),
-            Lesson(
-                id: "g1_time",
+                id: "g1_time_halfHour",
                 title: "Telling Time",
-                description: "Learn to tell time to the hour and half hour【8868879203866†L107-L117】.",
+                description: "Tell and write time to the hour and half hour.",
                 questions: [
-                    Question(prompt: "If the big hand is on 12 and the small hand is on 3, what time is it?", choices: ["3:00", "6:00", "12:30"], correctIndex: 0),
-                    Question(prompt: "If the big hand is on 6 and the small hand is on 4, what time is it?", choices: ["4:00", "4:30", "5:30"], correctIndex: 1),
-                    Question(prompt: "If the big hand is on 12 and the small hand is on 7, what time is it?", choices: ["7:00", "7:30", "12:30"], correctIndex: 0)
+                    Question(
+                        prompt: "The hour hand points to 3 and the minute hand points to 12. What time is it?",
+                        choices: ["3:00", "3:30", "12:30"],
+                        correctIndex: 0,
+                        interaction: .timeMatching
+                    ),
+                    Question(
+                        prompt: "The minute hand points to 6 and the hour hand points between 2 and 3. What time is it?",
+                        choices: ["2:30", "3:30", "6:00"],
+                        correctIndex: 0,
+                        interaction: .timeMatching
+                    ),
+                    Question(
+                        prompt: "Which clock shows 5:30?",
+                        choices: ["Hour hand at 5, minute hand at 6", "Hour hand at 6, minute hand at 5", "Hour hand at 12, minute hand at 5"],
+                        correctIndex: 0,
+                        interaction: .timeMatching
+                    )
+                ],
+                mode: .time,
+                unlockRequirement: UnlockRequirement(kind: .unitCompleted, value: "g1_fractions_intro"),
+                challengeSets: [
+                    ChallengeSet(
+                        id: "g1_time_challenge",
+                        title: "Elapsed Time",
+                        questions: [
+                            Question(
+                                prompt: "School starts at 8:30. Recess is 2 hours later. What time is recess?",
+                                choices: ["9:30", "10:30", "11:30"],
+                                correctIndex: 1,
+                                interaction: .timeMatching
+                            )
+                        ],
+                        threshold: 3
+                    )
+                ],
+                remediation: [
+                    RemediationLink(
+                        kindergartenLessonID: "kg_counting",
+                        message: "Review counting by fives to track minutes on the clock."
+                    )
                 ]
             ),
             Lesson(
-                id: "g1_fractions",
-                title: "Basic Fractions",
-                description: "Understand equal shares and simple fractions【8868879203866†L119-L124】.",
+                id: "g1_money_countCoins",
+                title: "Money & Coins",
+                description: "Count collections of coins to find the total value.",
                 questions: [
-                    Question(prompt: "Which fraction represents one half?", choices: ["1/2", "1/3", "1/4"], correctIndex: 0),
-                    Question(prompt: "Divide 8 apples equally among 4 friends. How many apples does each friend get?", choices: ["2", "4", "8"], correctIndex: 0),
-                    Question(prompt: "What is one quarter of 12?", choices: ["3", "4", "6"], correctIndex: 0)
+                    Question(
+                        prompt: "Two dimes and one nickel equals how much money?",
+                        choices: ["20¢", "25¢", "30¢"],
+                        correctIndex: 1,
+                        interaction: .moneyCounting
+                    ),
+                    Question(
+                        prompt: "Which set shows 35¢?",
+                        choices: ["One quarter and one dime", "Three dimes and one nickel", "Seven nickels"],
+                        correctIndex: 1,
+                        interaction: .moneyCounting
+                    ),
+                    Question(
+                        prompt: "You have 4 nickels. How much is that?",
+                        choices: ["15¢", "20¢", "25¢"],
+                        correctIndex: 1,
+                        interaction: .moneyCounting
+                    )
+                ],
+                mode: .money,
+                unlockRequirement: UnlockRequirement(kind: .unitCompleted, value: "g1_time_halfHour"),
+                challengeSets: [
+                    ChallengeSet(
+                        id: "g1_money_challenge",
+                        title: "Change Maker",
+                        questions: [
+                            Question(
+                                prompt: "A toy costs 42¢. Which coins make exactly 42¢?",
+                                choices: ["1 quarter, 1 dime, 1 nickel, 2 pennies", "4 dimes, 2 pennies", "3 nickels, 1 dime, 2 pennies"],
+                                correctIndex: 0,
+                                interaction: .moneyCounting
+                            )
+                        ],
+                        threshold: 3
+                    )
+                ],
+                remediation: [
+                    RemediationLink(
+                        kindergartenLessonID: "kg_arithmetic",
+                        message: "Review Kindergarten addition stories to support coin counting."
+                    )
+                ]
+            ),
+            Lesson(
+                id: "g1_data_pictureGraphs",
+                title: "Data & Picture Graphs",
+                description: "Read and interpret simple picture graphs.",
+                questions: [
+                    Question(
+                        prompt: "A picture graph shows 4 apples, 2 bananas, and 3 oranges. Which fruit has the most?",
+                        choices: ["Apples", "Bananas", "Oranges"],
+                        correctIndex: 0,
+                        interaction: .dataAnalysis
+                    ),
+                    Question(
+                        prompt: "How many pieces of fruit are there in total?",
+                        choices: ["7", "8", "9"],
+                        correctIndex: 2,
+                        interaction: .dataAnalysis
+                    ),
+                    Question(
+                        prompt: "If one more banana is added, how many bananas are there now?",
+                        choices: ["2", "3", "4"],
+                        correctIndex: 1,
+                        interaction: .dataAnalysis
+                    )
+                ],
+                mode: .data,
+                unlockRequirement: UnlockRequirement(kind: .unitCompleted, value: "g1_money_countCoins"),
+                challengeSets: [
+                    ChallengeSet(
+                        id: "g1_data_challenge",
+                        title: "Compare & Interpret",
+                        questions: [
+                            Question(
+                                prompt: "A bar graph shows 12 cats, 9 dogs, and 6 fish adopted. How many more cats than fish were adopted?",
+                                choices: ["2", "4", "6"],
+                                correctIndex: 2,
+                                interaction: .dataAnalysis
+                            )
+                        ],
+                        threshold: 3
+                    )
+                ],
+                remediation: [
+                    RemediationLink(
+                        kindergartenLessonID: "kg_shapes",
+                        message: "Review sorting shapes in Kindergarten to support data grouping."
+                    )
                 ]
             )
         ]
     }
+
 }
