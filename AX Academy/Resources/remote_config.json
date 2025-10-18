@@ -1,0 +1,15 @@
+{
+  "featureFlags": {
+    "caregiverDashboardEnabled": true,
+    "analyticsEnabled": false,
+    "remoteConfigEnabled": true,
+    "updateMessagingEnabled": true,
+    "localizedAudioEnabled": true
+  },
+  "recommendedNextSteps": [
+    "Celebrate counting milestones with quick number hunts at home.",
+    "Play time-matching games using household clocks to reinforce telling time.",
+    "Use fraction snacks (like sliced fruit) to make equal shares tangible."
+  ],
+  "minimumAppVersion": "1.0.0"
+}

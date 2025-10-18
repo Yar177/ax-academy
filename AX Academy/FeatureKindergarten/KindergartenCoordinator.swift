@@ -8,15 +8,18 @@ public final class KindergartenCoordinator: Coordinator {
     private let contentProvider: ContentProviding
     private let analytics: AnalyticsLogging
     private let persistence: Persistence
+    private let progressTracker: ProgressTracking
 
     /// Initializes the coordinator with required dependencies.  These are
     /// typically resolved from the `DependencyContainer` at the call site.
     public init(contentProvider: ContentProviding,
                 analytics: AnalyticsLogging,
-                persistence: Persistence) {
+                persistence: Persistence,
+                progressTracker: ProgressTracking) {
         self.contentProvider = contentProvider
         self.analytics = analytics
         self.persistence = persistence
+        self.progressTracker = progressTracker
     }
 
     /// Constructs the root view for the Kindergarten feature.  The root
@@ -27,7 +30,8 @@ public final class KindergartenCoordinator: Coordinator {
         let rootViewModel = KindergartenLessonListViewModel(grade: .kindergarten,
                                                 lessons: lessons,
                                                 analytics: analytics,
-                                                persistence: persistence)
+                                                persistence: persistence,
+                                                progressTracker: progressTracker)
         return KindergartenRootView(viewModel: rootViewModel)
     }
 }

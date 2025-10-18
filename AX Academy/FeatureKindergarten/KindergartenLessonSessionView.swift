@@ -24,16 +24,16 @@ struct KindergartenLessonSessionView: View {
     @ViewBuilder
     private var completionView: some View {
         VStack(spacing: 24) {
-            Text("Great job!")
+            Text(L10n.text("lesson_complete_title"))
                 .font(DSTypography.largeTitle())
                 .multilineTextAlignment(.center)
-            Text("You've completed the lesson.")
+            Text(L10n.text("lesson_complete_message"))
                 .font(DSTypography.body())
                 .multilineTextAlignment(.center)
             Button(action: {
                 dismiss()
             }) {
-                Text("Back to Lessons")
+                Text(L10n.text("lesson_back_to_list"))
             }
             .buttonStyle(PrimaryButtonStyle())
             .accessibilityIdentifier("backButton")
@@ -62,14 +62,14 @@ struct KindergartenLessonSessionView: View {
                 }
             }
             if let correct = viewModel.lastAnswerCorrect {
-                Text(correct ? "Correct!" : "Try again")
+                Text(correct ? L10n.text("lesson_feedback_correct") : L10n.text("lesson_feedback_incorrect"))
                     .font(DSTypography.caption())
                     .foregroundColor(correct ? .green : .red)
                     .transition(.opacity)
             }
             Spacer()
             // Progress indicator
-            Text("Question \(viewModel.currentIndex + 1) of \(viewModel.lesson.questions.count)")
+            Text(String(format: L10n.string("lesson_progress_format"), viewModel.currentIndex + 1, viewModel.lesson.questions.count))
                 .font(DSTypography.caption())
                 .foregroundColor(DSColor.secondaryText)
                 .accessibilityIdentifier("progress")

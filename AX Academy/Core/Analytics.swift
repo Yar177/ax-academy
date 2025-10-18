@@ -15,6 +15,20 @@ public enum AnalyticsEvent: Equatable {
     /// Called when a feature screen is shown.  Useful for measuring
     /// engagement.
     case screenPresented(name: String)
+    /// Triggered when the caregiver dashboard is opened.
+    case caregiverDashboardViewed
+    /// Triggered when a caregiver exports or shares a learner summary.
+    case caregiverSummaryShared
+    /// Triggered when consent is updated by a caregiver.
+    case consentUpdated
+    /// Fired whenever remote configuration is fetched successfully.
+    case remoteConfigFetched
+    /// Fired when remote configuration fails to load.
+    case remoteConfigFetchFailed(reason: String)
+    /// Logged when the app prompts the caregiver to install an update.
+    case updatePromptShown(minimumVersion: String)
+    /// Logged when the app enters or exits safe mode due to network outages.
+    case safeModeChanged(isEnabled: Bool)
 }
 
 /// A protocol for analytics logging.  This allows the app to collect

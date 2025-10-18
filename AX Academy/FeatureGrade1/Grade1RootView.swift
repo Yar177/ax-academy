@@ -14,12 +14,13 @@ struct Grade1RootView: View {
                     }
                 }
             }
-            .navigationTitle(viewModel.grade.displayName + " Math")
+            .navigationTitle(String(format: L10n.string("grade_math_title"), viewModel.grade.displayName))
             .navigationDestination(for: Lesson.self) { lesson in
                 let sessionVM = Grade1LessonSessionViewModel(grade: viewModel.grade,
                                                        lesson: lesson,
                                                        analytics: viewModel.analytics,
                                                        persistence: viewModel.persistence,
+                                                       progressTracker: viewModel.progressTracker,
                                                        markLessonCompleted: { [weak viewModel] lesson in
                                                            viewModel?.markLessonCompleted(lesson)
                                                        })
@@ -41,7 +42,7 @@ private struct LessonRowView: View {
             if completed {
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundColor(.green)
-                    .accessibilityLabel(Text("Completed"))
+                    .accessibilityLabel(Text(L10n.text("lesson_completed_accessibility")))
             }
         }
         .padding(.vertical, 8)

@@ -24,12 +24,12 @@ struct Grade1LessonSessionView: View {
     @ViewBuilder
     private var completionView: some View {
         VStack(spacing: 24) {
-            Text("Fantastic!")
+            Text(L10n.text("lesson_complete_title"))
                 .font(DSTypography.largeTitle())
-            Text("You've completed this lesson.")
+            Text(L10n.text("lesson_complete_message"))
                 .font(DSTypography.body())
             Button(action: { dismiss() }) {
-                Text("Back to Lessons")
+                Text(L10n.text("lesson_back_to_list"))
             }
             .buttonStyle(PrimaryButtonStyle())
         }
@@ -55,12 +55,12 @@ struct Grade1LessonSessionView: View {
                 }
             }
             if let correct = viewModel.lastAnswerCorrect {
-                Text(correct ? "Correct!" : "Try again")
+                Text(correct ? L10n.text("lesson_feedback_correct") : L10n.text("lesson_feedback_incorrect"))
                     .font(DSTypography.caption())
                     .foregroundColor(correct ? .green : .red)
             }
             Spacer()
-            Text("Question \(viewModel.currentIndex + 1) of \(viewModel.lesson.questions.count)")
+            Text(String(format: L10n.string("lesson_progress_format"), viewModel.currentIndex + 1, viewModel.lesson.questions.count))
                 .font(DSTypography.caption())
                 .foregroundColor(DSColor.secondaryText)
         }

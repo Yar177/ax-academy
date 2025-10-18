@@ -20,17 +20,20 @@ final class KindergartenLessonSessionViewModel: BaseViewModel {
     private let persistence: Persistence
     private let grade: Grade
     private let markLessonCompleted: (Lesson) -> Void
+    private let progressTracker: ProgressTracking
 
     init(grade: Grade,
          lesson: Lesson,
          analytics: AnalyticsLogging,
          persistence: Persistence,
+         progressTracker: ProgressTracking,
          markLessonCompleted: @escaping (Lesson) -> Void) {
         self.grade = grade
         self.lesson = lesson
         self.analytics = analytics
         self.persistence = persistence
         self.markLessonCompleted = markLessonCompleted
+        self.progressTracker = progressTracker
         super.init()
         analytics.log(event: .lessonStarted(grade: grade.rawValue, lessonID: lesson.id))
     }
@@ -50,6 +53,10 @@ final class KindergartenLessonSessionViewModel: BaseViewModel {
         let isCorrect = question.isCorrectChoice(at: index)
         lastAnswerCorrect = isCorrect
         analytics.log(event: .questionAnswered(correct: isCorrect))
+        progressTracker.recordAnswer(for: grade,
+                                     lessonID: lesson.id,
+                                     totalQuestions: lesson.questions.count,
+                                     wasCorrect: isCorrect)
 
         // Advance to next question after a short delay to allow for
         // feedback animations.  Use DispatchQueue to simulate asynchronous

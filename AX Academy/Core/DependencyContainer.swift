@@ -17,6 +17,7 @@ public final class DependencyContainer {
         // Register default implementations for optional services
         register(AnalyticsLogging.self) { NoopAnalyticsLogger() }
         register(Persistence.self) { UserDefaultsPersistence() }
+        register(ErrorLogging.self) { ConsoleErrorLogger() }
     }
 
     /// Registers a factory closure for creating instances of a given service
