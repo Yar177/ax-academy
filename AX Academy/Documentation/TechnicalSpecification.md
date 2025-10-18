@@ -4,12 +4,12 @@
 
 ### Module Dependency Graph
 ```
-Core → {DesignSystem, ContentModel, Kindergarten, Grade1, TestSupport}
-DesignSystem → {TestSupport}
-ContentModel → {DesignSystem, TestSupport}
-Kindergarten → {DesignSystem, ContentModel, TestSupport}
-Grade1 → {DesignSystem, ContentModel, TestSupport}
-TestSupport → {DesignSystem}
+Core → {DesignSystem, ContentModel, Kindergarten, Grade1}
+DesignSystem → ∅
+ContentModel → {DesignSystem}
+Kindergarten → {DesignSystem, ContentModel}
+Grade1 → {DesignSystem, ContentModel}
+TestSupport → {Core, DesignSystem, ContentModel, Kindergarten, Grade1}
 ```
 
 - `Core` is the application shell that orchestrates navigation, persistence, and analytics. It owns configuration and feature flag lifecycles and exposes shared services to feature modules.
