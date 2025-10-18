@@ -1,128 +1,123 @@
 import Foundation
 
-/// A protocol for retrieving curriculum content.  Conforming types return
-/// lessons for a given grade.  In production this could load from JSON or a
-/// network service; here we define a static provider for demonstration.
+/// Abstraction for retrieving structured curriculum data. Providers expose
+/// version metadata for analytics, strands for navigation, and aggregated
+/// progress information for dashboards.
 public protocol ContentProviding {
-    /// Returns all lessons available for the specified grade.
+    var catalogVersion: CurriculumVersion { get }
+    var catalogMetadata: CurriculumCatalog.Metadata { get }
     func lessons(for grade: Grade) -> [Lesson]
+    func strands(for grade: Grade) -> [LearningStrand]
+    func progressMetadata(for grade: Grade) -> GradeProgressMetadata
 }
 
-/// A simple content provider that returns static lessons defined in code.
-/// Lessons are based on typical kindergarten and first grade curriculum
-/// topics【124221548192575†L245-L269】【8868879203866†L39-L124】.  New subjects can be added by
-/// extending the `Grade` enumeration and adding corresponding cases here.
-public final class StaticContentProvider: ContentProviding {
-    public init() {}
+/// Loads curriculum data from a bundled JSON file. The provider keeps an
+/// in-memory cache of lessons and strands grouped by grade so requests remain
+/// fast even on lower-powered iPads. The same schema can be hydrated from a
+/// cloud endpoint by pointing this provider at a remote URL in the future.
+public final class BundledJSONContentProvider: ContentProviding {
+    public private(set) var catalogVersion: CurriculumVersion
+    public private(set) var catalogMetadata: CurriculumCatalog.Metadata
+
+    private let catalog: CurriculumCatalog
+    private let lessonsByGrade: [Grade: [Lesson]]
+    private let strandsByGrade: [Grade: [LearningStrand]]
+
+    public init(bundle: Bundle = .main,
+                resource: String = "curriculum_v1",
+                fileExtension: String = "json") {
+        let decoder = BundledJSONContentProvider.makeDecoder()
+        let catalog = BundledJSONContentProvider.loadCatalog(
+            bundle: bundle,
+            resource: resource,
+            fileExtension: fileExtension,
+            decoder: decoder
+        )
+        self.catalog = catalog
+        self.catalogVersion = catalog.metadata.version
+        self.catalogMetadata = catalog.metadata
+        self.lessonsByGrade = Dictionary(grouping: catalog.lessons, by: { $0.grade })
+        self.strandsByGrade = Dictionary(grouping: catalog.strands, by: { $0.grade })
+    }
+
+    // MARK: - ContentProviding
 
     public func lessons(for grade: Grade) -> [Lesson] {
-        switch grade {
-        case .kindergarten:
-            return kindergartenLessons
-        case .grade1:
-            return grade1Lessons
+        lessonsByGrade[grade] ?? []
+    }
+
+    public func strands(for grade: Grade) -> [LearningStrand] {
+        strandsByGrade[grade] ?? []
+    }
+
+    public func progressMetadata(for grade: Grade) -> GradeProgressMetadata {
+        let gradeLessons = lessons(for: grade)
+        let strandCount = (strandsByGrade[grade] ?? []).count
+        let uniqueSkillCount = Set(gradeLessons.flatMap { $0.skillIDs }).count
+        var variantCounts: [Lesson.Variant: Int] = Dictionary(uniqueKeysWithValues: Lesson.Variant.allCases.map { ($0, 0) })
+        for lesson in gradeLessons {
+            variantCounts[lesson.variant, default: 0] += 1
+        }
+        return GradeProgressMetadata(
+            grade: grade,
+            catalogVersion: catalogVersion,
+            totalStrands: strandCount,
+            totalSkills: uniqueSkillCount,
+            totalLessons: gradeLessons.count,
+            variants: variantCounts
+        )
+    }
+
+    // MARK: - Private helpers
+
+    private static func makeDecoder() -> JSONDecoder {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        return decoder
+    }
+
+    private static func loadCatalog(bundle: Bundle,
+                                    resource: String,
+                                    fileExtension: String,
+                                    decoder: JSONDecoder) -> CurriculumCatalog {
+        guard let url = locateResource(bundle: bundle, resource: resource, fileExtension: fileExtension) else {
+            assertionFailure("Unable to locate curriculum catalog resource \(resource).\(fileExtension)")
+            return .empty
+        }
+        do {
+            let data = try Data(contentsOf: url)
+            return try decoder.decode(CurriculumCatalog.self, from: data)
+        } catch {
+            assertionFailure("Failed to decode curriculum catalog: \(error)")
+            return .empty
         }
     }
 
-    // MARK: - Sample Lessons
-
-    private var kindergartenLessons: [Lesson] {
-        return [
-            Lesson(
-                id: "kg_counting",
-                title: "Counting to Five",
-                description: "Let's practice counting and recognising numbers up to five.",
-                questions: [
-                    Question(prompt: "What number comes after 4?", choices: ["3", "5", "6"], correctIndex: 1),
-                    Question(prompt: "How many balloons? 🎈🎈🎈", choices: ["3", "4", "5"], correctIndex: 0),
-                    Question(prompt: "Which set has more? 🍎🍎 or 🍎🍎🍎", choices: ["Two apples", "Three apples", "They are the same"], correctIndex: 1)
-                ]
-            ),
-            Lesson(
-                id: "kg_shapes",
-                title: "Shapes",
-                description: "Identify common shapes.",
-                questions: [
-                    Question(prompt: "Which shape has three sides?", choices: ["Triangle", "Square", "Circle"], correctIndex: 0),
-                    Question(prompt: "Which shape is round?", choices: ["Triangle", "Square", "Circle"], correctIndex: 2),
-                    Question(prompt: "Which shape has four equal sides?", choices: ["Triangle", "Square", "Rectangle"], correctIndex: 1)
-                ]
-            ),
-            Lesson(
-                id: "kg_arithmetic",
-                title: "Adding and Subtracting",
-                description: "Simple addition and subtraction within ten.",
-                questions: [
-                    Question(prompt: "3 + 2 = ?", choices: ["4", "5", "6"], correctIndex: 1),
-                    Question(prompt: "5 - 1 = ?", choices: ["3", "4", "5"], correctIndex: 1),
-                    Question(prompt: "2 + 4 = ?", choices: ["6", "7", "8"], correctIndex: 0)
-                ]
-            )
+    private static func locateResource(bundle: Bundle,
+                                        resource: String,
+                                        fileExtension: String) -> URL? {
+        if let url = bundle.url(forResource: resource, withExtension: fileExtension) {
+            return url
+        }
+        let tokenBundle = Bundle(for: BundleToken.self)
+        if let url = tokenBundle.url(forResource: resource, withExtension: fileExtension) {
+            return url
+        }
+        let fileManager = FileManager.default
+        let searchPaths = [
+            "AX Academy/ContentModel/Data",
+            "ContentModel/Data",
+            "Data"
         ]
+        let currentDirectory = URL(fileURLWithPath: fileManager.currentDirectoryPath)
+        for path in searchPaths {
+            let url = currentDirectory.appendingPathComponent(path).appendingPathComponent("\(resource).\(fileExtension)")
+            if fileManager.fileExists(atPath: url.path) {
+                return url
+            }
+        }
+        return nil
     }
 
-    private var grade1Lessons: [Lesson] {
-        return [
-            Lesson(
-                id: "g1_addSubWithin20",
-                title: "Addition and Subtraction Facts",
-                description: "Practice addition and subtraction facts up to 20【8868879203866†L39-L60】.",
-                questions: [
-                    Question(prompt: "9 + 8 = ?", choices: ["15", "16", "17"], correctIndex: 2),
-                    Question(prompt: "14 - 5 = ?", choices: ["8", "9", "10"], correctIndex: 1),
-                    Question(prompt: "10 + 7 = ?", choices: ["16", "17", "18"], correctIndex: 1)
-                ]
-            ),
-            Lesson(
-                id: "g1_inverse",
-                title: "Inverse Operations",
-                description: "See how addition and subtraction are related【8868879203866†L54-L61】.",
-                questions: [
-                    Question(prompt: "Which subtraction matches 5 + 2 = 7?", choices: ["7 - 2 = 5", "7 - 5 = 1", "5 - 2 = 3"], correctIndex: 0),
-                    Question(prompt: "Which addition matches 9 - 4 = 5?", choices: ["5 + 4 = 9", "4 + 5 = 8", "9 + 4 = 5"], correctIndex: 0),
-                    Question(prompt: "Which equation shows subtraction as the inverse of addition?", choices: ["6 + 3 = 9", "9 - 3 = 6", "8 + 1 = 9"], correctIndex: 1)
-                ]
-            ),
-            Lesson(
-                id: "g1_counting120",
-                title: "Counting & Writing Numbers",
-                description: "Count and write numbers up to 120【8868879203866†L68-L78】.",
-                questions: [
-                    Question(prompt: "What number comes after 119?", choices: ["110", "120", "121"], correctIndex: 1),
-                    Question(prompt: "How is 'one hundred and twelve' written?", choices: ["112", "120", "102"], correctIndex: 0),
-                    Question(prompt: "How many tens are in 76?", choices: ["7", "6", "76"], correctIndex: 0)
-                ]
-            ),
-            Lesson(
-                id: "g1_addWithin100",
-                title: "Adding Within 100",
-                description: "Add numbers within 100 using place value strategies【8868879203866†L80-L94】.",
-                questions: [
-                    Question(prompt: "25 + 30 = ?", choices: ["55", "65", "45"], correctIndex: 0),
-                    Question(prompt: "45 + 10 = ?", choices: ["35", "55", "65"], correctIndex: 1),
-                    Question(prompt: "63 + 20 = ?", choices: ["73", "83", "93"], correctIndex: 1)
-                ]
-            ),
-            Lesson(
-                id: "g1_time",
-                title: "Telling Time",
-                description: "Learn to tell time to the hour and half hour【8868879203866†L107-L117】.",
-                questions: [
-                    Question(prompt: "If the big hand is on 12 and the small hand is on 3, what time is it?", choices: ["3:00", "6:00", "12:30"], correctIndex: 0),
-                    Question(prompt: "If the big hand is on 6 and the small hand is on 4, what time is it?", choices: ["4:00", "4:30", "5:30"], correctIndex: 1),
-                    Question(prompt: "If the big hand is on 12 and the small hand is on 7, what time is it?", choices: ["7:00", "7:30", "12:30"], correctIndex: 0)
-                ]
-            ),
-            Lesson(
-                id: "g1_fractions",
-                title: "Basic Fractions",
-                description: "Understand equal shares and simple fractions【8868879203866†L119-L124】.",
-                questions: [
-                    Question(prompt: "Which fraction represents one half?", choices: ["1/2", "1/3", "1/4"], correctIndex: 0),
-                    Question(prompt: "Divide 8 apples equally among 4 friends. How many apples does each friend get?", choices: ["2", "4", "8"], correctIndex: 0),
-                    Question(prompt: "What is one quarter of 12?", choices: ["3", "4", "6"], correctIndex: 0)
-                ]
-            )
-        ]
-    }
+    private final class BundleToken {}
 }

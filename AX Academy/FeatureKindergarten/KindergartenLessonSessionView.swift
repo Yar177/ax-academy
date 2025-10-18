@@ -11,8 +11,8 @@ struct KindergartenLessonSessionView: View {
         Group {
             if viewModel.isFinished {
                 completionView
-            } else if let question = viewModel.currentQuestion {
-                questionView(question)
+            } else if let item = viewModel.currentQuestion {
+                itemView(item)
             } else {
                 ProgressView()
             }
@@ -42,23 +42,25 @@ struct KindergartenLessonSessionView: View {
         .background(DSColor.background)
     }
 
-    private func questionView(_ question: Question) -> some View {
+    private func itemView(_ item: LessonItem) -> some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text(question.prompt)
+            Text(item.prompt)
                 .font(DSTypography.title())
                 .foregroundColor(DSColor.primaryText)
                 .multilineTextAlignment(.leading)
                 .accessibilityIdentifier("prompt")
-            VStack(spacing: 12) {
-                ForEach(question.choices.indices, id: \ .self) { index in
-                    Button(action: {
-                        viewModel.answer(choiceAt: index)
-                    }) {
-                        Text(question.choices[index])
-                            .frame(maxWidth: .infinity)
+            if let choices = item.choices {
+                VStack(spacing: 12) {
+                    ForEach(Array(choices.enumerated()), id: \.offset) { pair in
+                        Button(action: {
+                            viewModel.answer(choiceAt: pair.offset)
+                        }) {
+                            Text(pair.element.text)
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(PrimaryButtonStyle())
+                        .accessibilityIdentifier("choice_\(pair.offset)")
                     }
-                    .buttonStyle(PrimaryButtonStyle())
-                    .accessibilityIdentifier("choice_\(index)")
                 }
             }
             if let correct = viewModel.lastAnswerCorrect {
@@ -69,7 +71,7 @@ struct KindergartenLessonSessionView: View {
             }
             Spacer()
             // Progress indicator
-            Text("Question \(viewModel.currentIndex + 1) of \(viewModel.lesson.questions.count)")
+            Text("Question \(viewModel.currentIndex + 1) of \(viewModel.lesson.items.count)")
                 .font(DSTypography.caption())
                 .foregroundColor(DSColor.secondaryText)
                 .accessibilityIdentifier("progress")
