@@ -26,7 +26,7 @@ struct AX_AcademyApp: App {
         
         // Register content provider
         container.register(ContentProviding.self) {
-            StaticContentProvider()
+            BundledJSONContentProvider()
         }
         
         // Analytics and persistence are already registered by default in DependencyContainer

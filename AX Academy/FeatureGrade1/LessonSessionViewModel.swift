@@ -2,7 +2,7 @@ import Foundation
 import Combine
 
 /// View model that manages a single Grade 1 lesson session.  It iterates
-/// through questions, evaluates answers and signals completion.  Analytics
+/// through lesson items, evaluates answers and signals completion.  Analytics
 /// events are logged when the lesson starts and completes, and when each
 /// question is answered.
 final class Grade1LessonSessionViewModel: BaseViewModel {
@@ -30,9 +30,9 @@ final class Grade1LessonSessionViewModel: BaseViewModel {
         analytics.log(event: .lessonStarted(grade: grade.rawValue, lessonID: lesson.id))
     }
 
-    var currentQuestion: Question? {
-        guard currentIndex < lesson.questions.count else { return nil }
-        return lesson.questions[currentIndex]
+    var currentQuestion: LessonItem? {
+        guard currentIndex < lesson.items.count else { return nil }
+        return lesson.items[currentIndex]
     }
 
     func answer(choiceAt index: Int) {
@@ -48,7 +48,7 @@ final class Grade1LessonSessionViewModel: BaseViewModel {
     private func advance() {
         lastAnswerCorrect = nil
         let next = currentIndex + 1
-        if next < lesson.questions.count {
+        if next < lesson.items.count {
             currentIndex = next
         } else {
             finishLesson()

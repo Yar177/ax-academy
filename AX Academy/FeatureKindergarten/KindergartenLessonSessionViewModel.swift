@@ -1,10 +1,10 @@
 import Foundation
 import Combine
 
-/// View model that manages a single lesson session.  It iterates through
-/// questions, evaluates answers and signals completion.  Analytics events are
-/// logged when the lesson starts and completes, and when each question is
-/// answered【8868879203866†L39-L60】.
+    /// View model that manages a single lesson session.  It iterates through
+    /// lesson items, evaluates answers and signals completion.  Analytics events
+    /// are logged when the lesson starts and completes, and when each question is
+    /// answered【8868879203866†L39-L60】.
 final class KindergartenLessonSessionViewModel: BaseViewModel {
     /// The lesson being presented.
     let lesson: Lesson
@@ -37,9 +37,9 @@ final class KindergartenLessonSessionViewModel: BaseViewModel {
 
     /// Returns the current question.  If the lesson has finished this
     /// returns nil.
-    var currentQuestion: Question? {
-        guard currentIndex < lesson.questions.count else { return nil }
-        return lesson.questions[currentIndex]
+    var currentQuestion: LessonItem? {
+        guard currentIndex < lesson.items.count else { return nil }
+        return lesson.items[currentIndex]
     }
 
     /// Handles a user answer.  Evaluates correctness and advances to the
@@ -64,7 +64,7 @@ final class KindergartenLessonSessionViewModel: BaseViewModel {
         // Reset answer state
         lastAnswerCorrect = nil
         let nextIndex = currentIndex + 1
-        if nextIndex < lesson.questions.count {
+        if nextIndex < lesson.items.count {
             currentIndex = nextIndex
         } else {
             finishLesson()
